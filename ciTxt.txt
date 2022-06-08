@@ -1,0 +1,352 @@
+//Copiar la plantilla
+//---------------------------------------------------
+//---------------------------------------------------
+//Crear los controllers en controllers.Esquipo.php
+<?php
+class Equipo extends CI_Controller {
+    public function c() {
+        frame($this,'equipo/c');
+    }
+}
+//---------------------------------------------------
+//---------------------------------------------------
+//Crear las views correspondientes en views.equipo.c.php
+<div class="container">
+
+</div>
+//---------------------------------------------------
+//---------------------------------------------------
+//Modificar el home en views.home.index.php
+<div class="container jumbotron">
+	<h1>Examen F1 V2</h1>
+		<form action="<?=base_url()?>equipo/r">
+			<button>
+				Equipo
+			</button>
+		</form>
+</div>
+//---------------------------------------------------
+//---------------------------------------------------
+//Añadir r en controllers.Equipo.php
+<?php
+class Equipo extends CI_Controller {
+    public function c() {
+        frame($this,'equipo/c');
+    }
+    public function r() {
+        frame($this,'equipo/r');
+    }
+}
+//---------------------------------------------------
+//---------------------------------------------------
+//Modificar las views en views.equipo.r.php
+<div class="container">
+		<h1>Lista de equipos</h1>
+		<form action="<?=base_url()?>equipo/c">
+			<input type="submit" value="Nuevo equipo"/>
+		</form>
+</div>
+//---------------------------------------------------
+//---------------------------------------------------
+//Modificar las views en views.equipo.c.php
+<div class="container">
+	<h1>Nuevo equipo</h1>
+	
+	<form action="<?=base_url()?>equipo/cPost" method="post">>
+	
+		<label for="idName">Nombre</label>
+		<input id="idName" type="text" name="nombre"/>
+		<br/>
+		
+		<input type="submit"/>
+	</form>
+</div>
+//---------------------------------------------------
+//---------------------------------------------------
+//Añadir cPost controllers.Equipo.php
+    public function cPost() {
+        $nombre = isset($_POST['nombre'])? $_POST['nombre'] : null;
+        
+        if($nombre==null || $nombre=='') {
+            errorMsg('El nombre del equipo no puede ser nulo');
+        }
+        
+        $this->load->model('Equipo_model');
+        try {
+            $this->Equipo_model->save($nombre);
+            redirect(base_url().'equipo/r');
+        }
+        catch (Exception $e) {
+            errorMsg($e->getMessage(),'equipo/c');
+        }
+        
+    }
+//---------------------------------------------------
+//---------------------------------------------------
+//Despues de haber añadido el modelo equipo junto al cPost
+//crearemos Equipo_model en models
+<?php
+class Equipo_model extends CI_Model {
+    
+    public function findByName($nombre) {
+        return R::findOne('equipo','nombre=?',[$nombre]);
+    }
+    
+    public function findAll() {
+        return R::findAll('equipo');
+    }
+    
+    public function save($nombre) {
+        if ($this->findByName($nombre)!=null) {
+            throw new Exception("El equipo $nombre ya existe");
+        }
+        $equipo = R::dispense('equipo');
+        $equipo->nombre = $nombre;
+        R::store($equipo);
+    }
+}
+//---------------------------------------------------
+//---------------------------------------------------
+//Veridicamos controllers.Equipo.php (Sólo si algo no funciona)
+<?php
+class Equipo extends CI_Controller {
+    public function r() {
+        error_reporting(0);
+        $this->load->model('Equipo_model');
+        $data['equipos'] = $this->Equipo_model->findAll();
+        frame($this,'equipo/r',$data);
+    }
+    
+    public function c() {
+        
+        frame($this,'equipo/c');
+    }
+    
+    public function cPost() {
+        $nombre = isset($_POST['nombre'])? $_POST['nombre'] : null;
+        
+        if($nombre==null || $nombre=='') {
+            errorMsg('El nombre del equipo no puede ser nulo');
+        }
+        
+        $this->load->model('Equipo_model');
+        try {
+            $this->Equipo_model->save($nombre);
+            redirect(base_url().'equipo/r');
+        }
+        catch (Exception $e) {
+            errorMsg($e->getMessage(),'equipo/c');
+        }
+        
+    }
+}
+//---------------------------------------------------
+//---------------------------------------------------
+//Modificar las views en views.equipo.r.php para listar los nombres
+//en una tabla
+			<table class="table table-striped">
+		<tr>
+			<th>Nombre</th>
+		</tr>
+		
+		<?php foreach ($equipos as $equipo):?>
+		<tr>
+			<td>
+			<?=$equipo->nombre?>
+			</td>
+		</tr>
+		<?php endforeach;?>
+	</table>
+//---------------------------------------------------
+//---------------------------------------------------
+//Añadimos en views.home.index.php partido
+		<form action="<?=base_url()?>partido/r">
+			<button>
+				Partido
+			</button>
+		</form>
+//---------------------------------------------------
+//---------------------------------------------------
+//Creamos Partido en controllers.Partido.php
+<?php
+class Partido extends CI_Controller {
+    public function r() {
+        error_reporting(0);
+        $this->load->model('Partido_model');
+        $data['partidos'] = $this->Partido_model->findAll();
+        frame($this,'partido/r',$data);
+    }
+    
+    public function c() {
+        
+        frame($this,'partido/c');
+    }
+    
+    public function cPost() {
+        $nombre = isset($_POST['nombre'])? $_POST['nombre'] : null;
+        
+        if($nombre==null || $nombre=='') {
+            errorMsg('El nombre del equipo no puede ser nulo');
+        }
+        
+        $this->load->model('Partido_model');
+        try {
+            $this->Partido_model->save($nombre);
+            redirect(base_url().'partido/r');
+        }
+        catch (Exception $e) {
+            errorMsg($e->getMessage(),'partido/c');
+        }
+        
+    }
+}
+//---------------------------------------------------
+//---------------------------------------------------
+//Creamos Partido_model en models (Dejámos esos cambios para más tarde)
+<?php
+class Partido_model extends CI_Model {
+    
+    public function findByName($nombre) {
+        return R::findOne('partido','nombre=?',[$nombre]);
+    }
+    
+    public function findAll() {
+        return R::findAll('partido');
+    }
+    
+    public function save($nombre) {
+        if ($this->findByName($nombre)!=null) {
+            throw new Exception("El partido $nombre ya existe");
+        }
+        $partido = R::dispense('partido');
+        $partido->nombre = $nombre;
+        R::store($partido);
+    }
+}
+//---------------------------------------------------
+//---------------------------------------------------
+//Creamos la view de partido
+//copiamos y pegamos de equipo y sustituímos por partido
+//---------------------------------------------------
+//---------------------------------------------------
+//Modificamos la vista views.partido.c.php
+//para crear las variables
+<div class="container">
+
+	<h1>Nuevo partido</h1>
+	
+	<form action="<?=base_url()?>partido/cPost" method="post">
+	
+		<label>Eq.local</label>
+		<select name="idLocal">
+			<?php foreach ($equipos as $equipo):?>
+			<option value="<?=$equipo->id?>">
+				<?=$equipo->nombre?>
+			</option>
+			<?php endforeach;?>
+		</select>
+		
+		<label for="idGL">Goles</label>
+		<input id="idGL" type="number" min="0" max="50" value="0" name="gl"/>
+		
+		<br/>
+		
+		<label>Eq.visitante</label>
+		<select name="idVisitante">
+			<?php foreach ($equipos as $equipo):?>
+			<option value="<?=$equipo->id?>">
+				<?=$equipo->nombre?>
+			</option>
+			<?php endforeach;?>
+		</select>
+		
+		<label for="idGV">Goles</label>
+		<input id="idGV" type="number" min="0" max="50" value="0" name="gv"/>
+		
+		<br/>
+		
+		
+		<label for="idJornada">Jornada</label>
+		<input id="idJornada" type="number" min="1" max="50" value="1" name="nJornada"/>
+		<br/>
+		
+		<label for="idFecha">Fecha</label>
+		<input id="idFecha" type="date" min="1" max="50" value="1" name="fecha"/>
+		<br/>
+		
+		<input type="submit"/>
+	</form>
+</div>
+//---------------------------------------------------
+//---------------------------------------------------
+//Verificamos que tengamos en Equipo.php esto en la funcion de r
+ 		error_reporting(0);
+        $this->load->model('Equipo_model');
+        $data['equipos'] = $this->Equipo_model->findAll();
+//---------------------------------------------------
+//---------------------------------------------------
+//Verificamos si está todo correcto en controllers.Partido.php
+<?php
+
+class Partido extends CI_Controller
+{
+
+    public function r()
+    {
+        error_reporting(0);
+        $this->load->model('Partido_model');
+        if (isset($_GET['fecha']) && $_GET['fecha']!='') {
+            $data['partidos'] = $this->Partido_model->findByFecha($_GET['fecha']);
+        }
+        else {
+            $data['partidos'] = $this->Partido_model->findAll();
+        }
+        frame($this, 'partido/r', $data);
+    }
+
+    public function c()
+    {
+        error_reporting(0);
+        $this->load->model('Equipo_model');
+        $data['equipos'] = $this->Equipo_model->findAll();
+        frame($this, 'partido/c', $data);
+    }
+
+    public function cPost()
+    {
+        error_reporting(0);
+        $idLocal = isset($_POST['idLocal']) ? $_POST['idLocal'] : null;
+        $idVisitante = isset($_POST['idVisitante']) ? $_POST['idVisitante'] : null;
+        $gl = isset($_POST['gl']) ? $_POST['gl'] : null;
+        $gv = isset($_POST['gv']) ? $_POST['gv'] : null;
+        $nJornada = isset($_POST['nJornada']) ? $_POST['nJornada'] : null;
+        $fecha = isset($_POST['fecha']) ? $_POST['fecha'] : null;
+
+        try {
+            if ($gl == null || $gv == null || $idLocal == null || $idVisitante == null || $nJornada == null || $fecha == null) {
+                throw new Exception('No puede haber datos nulos');
+            }
+
+            if ($gv < 0 || $gl < 0) {
+                throw new Exception('Los goles no pueden ser menores que cero');
+            }
+
+            if ($nJornada < 1 || $nJornada > 50) {
+                throw new Exception('El número de jornada debe estar en el rango 1..50');
+            }
+
+            if ($idLocal == $idVisitante) {
+                throw new Exception('Un equipo no puede jugar contra sí mismo');
+            }
+
+            $this->load->model('Partido_model');
+            $this->Partido_model->save($idLocal,$idVisitante,$nJornada,$fecha,$gl,$gv);
+            redirect(base_url().'partido/r');
+        } catch (Exception $e) {
+            errorMsg($e->getMessage(), 'partido/c');
+        }
+    }
+}
+//---------------------------------------------------
+MIN 32
+//---------------------------------------------------

@@ -1,13 +1,14 @@
 <?php
 class Equipo extends CI_Controller {
     public function r() {
+        error_reporting(0);
+        $this->load->model('Equipo_model');
+        $data['equipos'] = $this->Equipo_model->findAll();
         frame($this,'equipo/r',$data);
     }
     
     public function c() {
-        error_reporting(0);
-        $this->load->model('Equipo_model');
-        $data['equipos'] = $this->Equipo_model->findAll();
+        
         frame($this,'equipo/c');
     }
     
